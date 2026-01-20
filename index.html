@@ -81,24 +81,13 @@
             background: #2c5aa0;
         }
 
-        .login-box button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
         .error-message {
             color: #dc3545;
             margin-top: 15px;
             font-size: 0.9rem;
         }
 
-        .success-message {
-            color: #28a745;
-            margin-top: 15px;
-            font-size: 0.9rem;
-        }
-
-        /* Chat Interface (hidden until authenticated) */
+        /* Chat Interface */
         .chat-app {
             display: none;
             height: 100vh;
@@ -174,7 +163,6 @@
             color: white;
         }
 
-        /* Deep Search Toggle */
         .deep-search-toggle {
             display: flex;
             align-items: center;
@@ -230,7 +218,6 @@
             transform: translateX(24px);
         }
 
-        /* Chat Container */
         .chat-container {
             flex: 1;
             overflow-y: auto;
@@ -240,7 +227,6 @@
             gap: 15px;
         }
 
-        /* Messages */
         .message {
             max-width: 85%;
             padding: 15px 20px;
@@ -272,7 +258,6 @@
         .message.assistant h1 { font-size: 1.4rem; }
         .message.assistant h2 { font-size: 1.2rem; }
         .message.assistant h3 { font-size: 1.1rem; }
-
         .message.assistant p { margin-bottom: 10px; }
         .message.assistant ul, .message.assistant ol { margin-left: 20px; margin-bottom: 10px; }
         .message.assistant li { margin-bottom: 5px; }
@@ -322,7 +307,6 @@
             color: #1a3a6e;
         }
 
-        /* Input Area */
         .input-area {
             background: white;
             padding: 20px 30px;
@@ -366,7 +350,6 @@
             cursor: not-allowed;
         }
 
-        /* Loading Animation */
         .loading {
             display: flex;
             gap: 5px;
@@ -389,7 +372,6 @@
             40% { transform: scale(1); }
         }
 
-        /* Welcome Message */
         .welcome {
             text-align: center;
             padding: 40px;
@@ -401,7 +383,6 @@
             margin-bottom: 10px;
         }
 
-        /* Status indicator */
         .status {
             font-size: 0.75rem;
             color: #666;
@@ -414,18 +395,16 @@
     </style>
 </head>
 <body>
-    <!-- Login Screen -->
     <div class="login-container" id="loginContainer">
         <div class="login-box">
             <h1>RIMA Technical Assistant</h1>
             <p>Please enter your access code</p>
             <input type="password" id="accessCode" placeholder="Access Code" autofocus>
-            <button onclick="authenticate()">Access Chat</button>
+            <button onclick="login()">Access Chat</button>
             <div id="loginMessage"></div>
         </div>
     </div>
 
-    <!-- Chat Interface (shown after authentication) -->
     <div class="chat-app" id="chatApp">
         <div class="header">
             <div class="header-text">
@@ -470,15 +449,18 @@
     </div>
 
     <script>
-        // Configuration
+        // ============================================================================
+        // CONFIGURATION - CHANGE ACCESS CODE HERE
+        // ============================================================================
+        const VALID_ACCESS_CODE = 'RIMA2025';  // ← CHANGE THIS TO YOUR PASSWORD
+
         const WEBHOOK_URL = 'https://schaefer.app.n8n.cloud/webhook/rima-chat';
 
         // Session management
-        let authToken = sessionStorage.getItem('rimaAuthToken');
+        let isAuthenticated = sessionStorage.getItem('rimaAuth') === 'true';
         let sessionId = sessionStorage.getItem('rimaSessionId') || 'session_' + Math.random().toString(36).substr(2, 9);
         sessionStorage.setItem('rimaSessionId', sessionId);
 
-        // DOM elements
         const loginContainer = document.getElementById('loginContainer');
         const chatApp = document.getElementById('chatApp');
         const chatContainer = document.getElementById('chatContainer');
@@ -486,78 +468,50 @@
         const sendBtn = document.getElementById('sendBtn');
         const status = document.getElementById('status');
 
-        // Check if already authenticated
-        if (authToken) {
+        // Check if already logged in
+        if (isAuthenticated) {
             showChat();
         }
 
-        // Authentication function
-        async function authenticate() {
-            const accessCode = document.getElementById('accessCode').value;
+        // Login function
+        function login() {
+            const code = document.getElementById('accessCode').value;
             const loginMessage = document.getElementById('loginMessage');
 
-            if (!accessCode) {
+            if (!code) {
                 loginMessage.className = 'error-message';
                 loginMessage.textContent = 'Please enter an access code';
                 return;
             }
 
-            loginMessage.className = 'success-message';
-            loginMessage.textContent = 'Verifying...';
-
-            try {
-                // Validate access code with N8N
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'authenticate',
-                        accessCode: accessCode
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.authenticated) {
-                    // Store token and show chat
-                    authToken = accessCode;
-                    sessionStorage.setItem('rimaAuthToken', authToken);
-                    showChat();
-                } else {
-                    loginMessage.className = 'error-message';
-                    loginMessage.textContent = 'Invalid access code. Please try again.';
-                }
-            } catch (error) {
-                console.error('Auth error:', error);
+            if (code === VALID_ACCESS_CODE) {
+                sessionStorage.setItem('rimaAuth', 'true');
+                showChat();
+            } else {
                 loginMessage.className = 'error-message';
-                loginMessage.textContent = 'Connection error. Please try again.';
+                loginMessage.textContent = 'Invalid access code. Please try again.';
+                document.getElementById('accessCode').value = '';
+                document.getElementById('accessCode').focus();
             }
         }
 
-        // Show chat interface
         function showChat() {
             loginContainer.style.display = 'none';
             chatApp.classList.add('authenticated');
             userInput.focus();
         }
 
-        // Logout function
         function logout() {
-            sessionStorage.removeItem('rimaAuthToken');
+            sessionStorage.removeItem('rimaAuth');
             sessionStorage.removeItem('rimaSessionId');
             location.reload();
         }
 
         // Enter key for login
         document.getElementById('accessCode').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                authenticate();
-            }
+            if (e.key === 'Enter') login();
         });
 
-        // Toggle machine selector
         function toggleMachineSelector() {
             const deepSearchToggle = document.getElementById('deepSearchToggle');
             const machineSelect = document.getElementById('machineSelect');
@@ -573,14 +527,12 @@
             }
         }
 
-        // Enter key to send message
         userInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !sendBtn.disabled) {
                 sendMessage();
             }
         });
 
-        // Send message function
         async function sendMessage() {
             const message = userInput.value.trim();
             if (!message) return;
@@ -609,7 +561,6 @@
             sendBtn.disabled = true;
             userInput.disabled = true;
             status.textContent = isDeepSearch ? 'Deep searching...' : 'Processing...';
-            status.className = 'status';
 
             const loadingDiv = document.createElement('div');
             loadingDiv.className = 'message assistant loading';
@@ -625,15 +576,13 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Auth-Token': authToken
                     },
                     body: JSON.stringify({
                         sessionId: sessionId,
                         action: 'sendMessage',
                         chatInput: message,
                         machine: selectedMachine,
-                        deepSearch: isDeepSearch,
-                        authToken: authToken
+                        deepSearch: isDeepSearch
                     }),
                     signal: controller.signal
                 });
@@ -668,7 +617,6 @@
                 console.error('Error:', error);
 
                 let errorMessage = 'Sorry, there was an error connecting to the assistant.';
-
                 if (error.name === 'AbortError') {
                     errorMessage = '⏱️ The request took too long and timed out.';
                 } else {
@@ -685,7 +633,6 @@
             userInput.focus();
         }
 
-        // Add message to chat
         function addMessage(text, type) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
