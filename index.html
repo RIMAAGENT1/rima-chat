@@ -20,6 +20,95 @@
             flex-direction: column;
         }
 
+        /* Login Screen */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a3a6e 0%, #2c5aa0 100%);
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-box h1 {
+            color: #1a3a6e;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .login-box p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .login-box input:focus {
+            border-color: #1a3a6e;
+        }
+
+        .login-box button {
+            width: 100%;
+            background: #1a3a6e;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .login-box button:hover {
+            background: #2c5aa0;
+        }
+
+        .login-box button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .success-message {
+            color: #28a745;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        /* Chat Interface (hidden until authenticated) */
+        .chat-app {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .chat-app.authenticated {
+            display: flex;
+        }
+
         /* Header */
         .header {
             background: linear-gradient(135deg, #1a3a6e 0%, #2c5aa0 100%);
@@ -28,10 +117,6 @@
             align-items: center;
             gap: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .header img {
-            height: 50px;
         }
 
         .header-text {
@@ -47,6 +132,22 @@
         .header-text p {
             font-size: 0.85rem;
             opacity: 0.9;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: white;
         }
 
         .header select {
@@ -66,11 +167,6 @@
         .header select:hover {
             background: rgba(255,255,255,0.25);
             border-color: rgba(255,255,255,0.5);
-        }
-
-        .header select:focus {
-            background: rgba(255,255,255,0.3);
-            border-color: white;
         }
 
         .header select option {
@@ -134,14 +230,6 @@
             transform: translateX(24px);
         }
 
-        .toggle-switch:hover .toggle-slider {
-            background-color: rgba(255,255,255,0.3);
-        }
-
-        .toggle-switch input:checked:hover + .toggle-slider {
-            background-color: rgba(46, 213, 115, 0.7);
-        }
-
         /* Chat Container */
         .chat-container {
             flex: 1;
@@ -175,7 +263,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
-        /* Markdown Styling */
         .message.assistant h1, .message.assistant h2, .message.assistant h3 {
             color: #1a3a6e;
             margin-top: 15px;
@@ -186,18 +273,9 @@
         .message.assistant h2 { font-size: 1.2rem; }
         .message.assistant h3 { font-size: 1.1rem; }
 
-        .message.assistant p {
-            margin-bottom: 10px;
-        }
-
-        .message.assistant ul, .message.assistant ol {
-            margin-left: 20px;
-            margin-bottom: 10px;
-        }
-
-        .message.assistant li {
-            margin-bottom: 5px;
-        }
+        .message.assistant p { margin-bottom: 10px; }
+        .message.assistant ul, .message.assistant ol { margin-left: 20px; margin-bottom: 10px; }
+        .message.assistant li { margin-bottom: 5px; }
 
         .message.assistant table {
             width: 100%;
@@ -239,46 +317,9 @@
             border-radius: 4px;
         }
 
-        .message.assistant pre {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 15px;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin: 10px 0;
-        }
-
-        .message.assistant pre code {
-            background: none;
-            padding: 0;
-            color: inherit;
-        }
-
-        .message.assistant blockquote {
-            border-left: 4px solid #1a3a6e;
-            padding-left: 15px;
-            margin: 10px 0;
-            color: #666;
-            font-style: italic;
-        }
-
-        .message.assistant hr {
-            border: none;
-            border-top: 2px solid #e0e0e0;
-            margin: 20px 0;
-        }
-
         .message.assistant strong {
             font-weight: 600;
             color: #1a3a6e;
-        }
-
-        /* Warning/Safety Styling */
-        .message.assistant p:has(⚠️), .message.assistant li:has(⚠️) {
-            background: #fff3cd;
-            padding: 10px;
-            border-radius: 6px;
-            border-left: 4px solid #ffc107;
         }
 
         /* Input Area */
@@ -373,106 +414,191 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <img src="RIMA_Machine.png" alt="RIMA Atlanta">
-        <div class="header-text">
-            <h1>Technical Assistant</h1>
-            <p>We move Post Press</p>
-        </div>
-        <div class="deep-search-toggle">
-            <span>Deep Search</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="deepSearchToggle" onchange="toggleMachineSelector()">
-                <span class="toggle-slider"></span>
-            </label>
-        </div>
-        <select id="machineSelect" disabled style="opacity: 0.5;">
-            <option value="">General Chat</option>
-            <option value="RS-10">RS-10</option>
-            <option value="RS-11">RS-11</option>
-            <option value="RS-12">RS-12</option>
-            <option value="RS-33">RS-33</option>
-            <option value="SH700">SH700</option>
-            <option value="RS-610">RS-610</option>
-            <option value="RS-650">RS-650</option>
-        </select>
-    </div>
-
-    <div class="chat-container" id="chatContainer">
-        <div class="welcome">
-            <h2>Welcome to RIMA Technical Support</h2>
-            <p><strong>Regular Chat:</strong> Ask questions about RIMA equipment specifications, dimensions, capabilities, or operation.</p>
-            <p><strong>Deep Search Mode:</strong> Toggle on for specialized electrical, PLC programming, and controls questions (requires machine selection).</p>
-            <p><em>Supported machines: RS-10, RS-11, RS-12, RS-33, SH700, RS-610, RS-650</em></p>
+    <!-- Login Screen -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <h1>RIMA Technical Assistant</h1>
+            <p>Please enter your access code</p>
+            <input type="password" id="accessCode" placeholder="Access Code" autofocus>
+            <button onclick="authenticate()">Access Chat</button>
+            <div id="loginMessage"></div>
         </div>
     </div>
 
-    <div class="status" id="status">Ready</div>
+    <!-- Chat Interface (shown after authentication) -->
+    <div class="chat-app" id="chatApp">
+        <div class="header">
+            <div class="header-text">
+                <h1>RIMA Technical Assistant</h1>
+                <p>We move Post Press</p>
+            </div>
+            <div class="deep-search-toggle">
+                <span>Deep Search</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="deepSearchToggle" onchange="toggleMachineSelector()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <select id="machineSelect" disabled style="opacity: 0.5;">
+                <option value="">General Chat</option>
+                <option value="RS-10">RS-10</option>
+                <option value="RS-11">RS-11</option>
+                <option value="RS-12">RS-12</option>
+                <option value="RS-33">RS-33</option>
+                <option value="SH700">SH700</option>
+                <option value="RS-610">RS-610</option>
+                <option value="RS-650">RS-650</option>
+            </select>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
 
-    <div class="input-area">
-        <input type="text" id="userInput" placeholder="Ask a technical question..." autofocus>
-        <button id="sendBtn" onclick="sendMessage()">Send</button>
+        <div class="chat-container" id="chatContainer">
+            <div class="welcome">
+                <h2>Welcome to RIMA Technical Support</h2>
+                <p><strong>Regular Chat:</strong> Ask questions about RIMA equipment specifications, dimensions, capabilities, or operation.</p>
+                <p><strong>Deep Search Mode:</strong> Toggle on for specialized electrical, PLC programming, and controls questions (requires machine selection).</p>
+                <p><em>Supported machines: RS-10, RS-11, RS-12, RS-33, SH700, RS-610, RS-650</em></p>
+            </div>
+        </div>
+
+        <div class="status" id="status">Ready</div>
+
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Ask a technical question...">
+            <button id="sendBtn" onclick="sendMessage()">Send</button>
+        </div>
     </div>
 
     <script>
-        // Configuration - Production URL
+        // Configuration
         const WEBHOOK_URL = 'https://schaefer.app.n8n.cloud/webhook/rima-chat';
-        
+
+        // Session management
+        let authToken = sessionStorage.getItem('rimaAuthToken');
+        let sessionId = sessionStorage.getItem('rimaSessionId') || 'session_' + Math.random().toString(36).substr(2, 9);
+        sessionStorage.setItem('rimaSessionId', sessionId);
+
+        // DOM elements
+        const loginContainer = document.getElementById('loginContainer');
+        const chatApp = document.getElementById('chatApp');
         const chatContainer = document.getElementById('chatContainer');
         const userInput = document.getElementById('userInput');
         const sendBtn = document.getElementById('sendBtn');
         const status = document.getElementById('status');
 
-        // Session ID for conversation tracking
-        const sessionId = 'session_' + Math.random().toString(36).substr(2, 9);
+        // Check if already authenticated
+        if (authToken) {
+            showChat();
+        }
 
-        // Toggle machine selector based on Deep Search
-        function toggleMachineSelector() {
-            const deepSearchToggle = document.getElementById('deepSearchToggle');
-            const machineSelect = document.getElementById('machineSelect');
-            
-            if (deepSearchToggle.checked) {
-                // Deep Search ON - Enable machine selector
-                machineSelect.disabled = false;
-                machineSelect.style.opacity = '1';
-                machineSelect.selectedIndex = 1; // Select first machine
-            } else {
-                // Deep Search OFF - Disable and reset to General
-                machineSelect.disabled = true;
-                machineSelect.style.opacity = '0.5';
-                machineSelect.selectedIndex = 0; // Reset to "General Chat"
+        // Authentication function
+        async function authenticate() {
+            const accessCode = document.getElementById('accessCode').value;
+            const loginMessage = document.getElementById('loginMessage');
+
+            if (!accessCode) {
+                loginMessage.className = 'error-message';
+                loginMessage.textContent = 'Please enter an access code';
+                return;
+            }
+
+            loginMessage.className = 'success-message';
+            loginMessage.textContent = 'Verifying...';
+
+            try {
+                // Validate access code with N8N
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'authenticate',
+                        accessCode: accessCode
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.authenticated) {
+                    // Store token and show chat
+                    authToken = accessCode;
+                    sessionStorage.setItem('rimaAuthToken', authToken);
+                    showChat();
+                } else {
+                    loginMessage.className = 'error-message';
+                    loginMessage.textContent = 'Invalid access code. Please try again.';
+                }
+            } catch (error) {
+                console.error('Auth error:', error);
+                loginMessage.className = 'error-message';
+                loginMessage.textContent = 'Connection error. Please try again.';
             }
         }
 
-        // Enter key to send
+        // Show chat interface
+        function showChat() {
+            loginContainer.style.display = 'none';
+            chatApp.classList.add('authenticated');
+            userInput.focus();
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.removeItem('rimaAuthToken');
+            sessionStorage.removeItem('rimaSessionId');
+            location.reload();
+        }
+
+        // Enter key for login
+        document.getElementById('accessCode').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                authenticate();
+            }
+        });
+
+        // Toggle machine selector
+        function toggleMachineSelector() {
+            const deepSearchToggle = document.getElementById('deepSearchToggle');
+            const machineSelect = document.getElementById('machineSelect');
+
+            if (deepSearchToggle.checked) {
+                machineSelect.disabled = false;
+                machineSelect.style.opacity = '1';
+                machineSelect.selectedIndex = 1;
+            } else {
+                machineSelect.disabled = true;
+                machineSelect.style.opacity = '0.5';
+                machineSelect.selectedIndex = 0;
+            }
+        }
+
+        // Enter key to send message
         userInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !sendBtn.disabled) {
                 sendMessage();
             }
         });
 
+        // Send message function
         async function sendMessage() {
             const message = userInput.value.trim();
             if (!message) return;
 
-            // Get selected machine and deep search state
             const machineSelect = document.getElementById('machineSelect');
             const deepSearchToggle = document.getElementById('deepSearchToggle');
             const selectedMachine = machineSelect.value;
             const isDeepSearch = deepSearchToggle.checked;
 
-            // Validate: If Deep Search is ON, machine must be selected
             if (isDeepSearch && (!selectedMachine || selectedMachine === '')) {
                 alert('Please select a machine model for Deep Search mode.');
                 machineSelect.focus();
                 return;
             }
 
-            // Clear welcome message on first send
             const welcome = document.querySelector('.welcome');
             if (welcome) welcome.remove();
 
-            // Add user message with context
             let displayMessage = message;
             if (isDeepSearch && selectedMachine) {
                 displayMessage = `[${selectedMachine} - Deep Search] ${message}`;
@@ -480,38 +606,17 @@
             addMessage(displayMessage, 'user');
             userInput.value = '';
 
-            // Disable input while processing
             sendBtn.disabled = true;
             userInput.disabled = true;
-            machineSelect.disabled = true;
-            deepSearchToggle.disabled = true;
             status.textContent = isDeepSearch ? 'Deep searching...' : 'Processing...';
             status.className = 'status';
 
-            // Progressive status updates for long-running queries
-            const statusMessages = [
-                { delay: 0, text: isDeepSearch ? 'Searching technical documentation...' : 'Processing your question...' },
-                { delay: 15000, text: 'Analyzing equipment specifications...' },
-                { delay: 45000, text: 'Generating detailed response...' },
-                { delay: 90000, text: 'Finalizing answer (this is taking longer than usual)...' }
-            ];
-
-            let currentStatusIndex = 0;
-            const statusInterval = setInterval(() => {
-                currentStatusIndex++;
-                if (currentStatusIndex < statusMessages.length) {
-                    status.textContent = statusMessages[currentStatusIndex].text;
-                }
-            }, 15000);
-
-            // Show loading
             const loadingDiv = document.createElement('div');
             loadingDiv.className = 'message assistant loading';
             loadingDiv.innerHTML = '<span></span><span></span><span></span>';
             chatContainer.appendChild(loadingDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // Add timeout handling (3 minutes)
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 180000);
 
@@ -520,20 +625,20 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'X-Auth-Token': authToken
                     },
                     body: JSON.stringify({
                         sessionId: sessionId,
                         action: 'sendMessage',
                         chatInput: message,
                         machine: selectedMachine,
-                        deepSearch: isDeepSearch
+                        deepSearch: isDeepSearch,
+                        authToken: authToken
                     }),
                     signal: controller.signal
                 });
 
                 clearTimeout(timeoutId);
-
-                // Remove loading
                 loadingDiv.remove();
 
                 if (!response.ok) {
@@ -541,8 +646,7 @@
                 }
 
                 const data = await response.json();
-                
-                // Extract the response text
+
                 let responseText = '';
                 if (data.response) {
                     responseText = data.response;
@@ -557,55 +661,45 @@
                 addMessage(responseText, 'assistant');
                 status.textContent = 'Ready';
                 status.className = 'status connected';
-                clearInterval(statusInterval);
 
             } catch (error) {
                 loadingDiv.remove();
                 clearTimeout(timeoutId);
-                clearInterval(statusInterval);
                 console.error('Error:', error);
-                
+
                 let errorMessage = 'Sorry, there was an error connecting to the assistant.';
-                
+
                 if (error.name === 'AbortError') {
-                    errorMessage = '⏱️ The request took too long and timed out (>3 minutes). This can happen with complex queries. Please try:\n\n• Breaking your question into smaller parts\n• Being more specific about what you need\n• Contacting support at service@rima-atlanta.com if this persists';
-                } else if (!navigator.onLine) {
-                    errorMessage = '🌐 No internet connection detected. Please check your network and try again.';
+                    errorMessage = '⏱️ The request took too long and timed out.';
                 } else {
-                    errorMessage = '❌ Connection error. Please check that the N8N workflow is running and active.';
+                    errorMessage = '❌ Connection error. Please try again.';
                 }
-                
+
                 addMessage(errorMessage, 'assistant');
-                status.textContent = error.name === 'AbortError' ? 'Request timed out' : 'Connection error';
+                status.textContent = 'Error';
                 status.className = 'status error';
             }
 
-            // Re-enable input
             sendBtn.disabled = false;
             userInput.disabled = false;
-            machineSelect.disabled = false;
-            deepSearchToggle.disabled = false;
             userInput.focus();
         }
 
+        // Add message to chat
         function addMessage(text, type) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
-            
+
             if (type === 'assistant') {
-                // Check if response contains HTML tags
                 if (text.includes('<div') || text.includes('<table>') || text.includes('<h1>') || text.includes('<h2>')) {
-                    // Render HTML directly - our N8N workflow sends clean, styled HTML
                     messageDiv.innerHTML = text;
                 } else {
-                    // Fallback to markdown parsing for plain text
                     messageDiv.innerHTML = marked.parse(text);
                 }
             } else {
-                // User messages - plain text only
                 messageDiv.textContent = text;
             }
-            
+
             chatContainer.appendChild(messageDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
