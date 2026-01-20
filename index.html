@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIMA Technical Assistant</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f5f7fa;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a3a6e 0%, #2c5aa0 100%);
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header img {
+            height: 50px;
+        }
+
+        .header-text {
+            color: white;
+            flex: 1;
+        }
+
+        .header-text h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .header-text p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .header select {
+            padding: 10px 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            font-size: 0.95rem;
+            outline: none;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 180px;
+            font-weight: 500;
+        }
+
+        .header select:hover {
+            background: rgba(255,255,255,0.25);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .header select:focus {
+            background: rgba(255,255,255,0.3);
+            border-color: white;
+        }
+
+        .header select option {
+            background: #1a3a6e;
+            color: white;
+        }
+
+        /* Deep Search Toggle */
+        .deep-search-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: 0.3s;
+            border-radius: 20px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: rgba(46, 213, 115, 0.6);
+            border-color: rgba(46, 213, 115, 0.8);
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        .toggle-switch:hover .toggle-slider {
+            background-color: rgba(255,255,255,0.3);
+        }
+
+        .toggle-switch input:checked:hover + .toggle-slider {
+            background-color: rgba(46, 213, 115, 0.7);
+        }
+
+        /* Chat Container */
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Messages */
+        .message {
+            max-width: 85%;
+            padding: 15px 20px;
+            border-radius: 12px;
+            line-height: 1.6;
+        }
+
+        .message.user {
+            background: #1a3a6e;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.assistant {
+            background: white;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        /* Markdown Styling */
+        .message.assistant h1, .message.assistant h2, .message.assistant h3 {
+            color: #1a3a6e;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        .message.assistant h1 { font-size: 1.4rem; }
+        .message.assistant h2 { font-size: 1.2rem; }
+        .message.assistant h3 { font-size: 1.1rem; }
+
+        .message.assistant p {
+            margin-bottom: 10px;
+        }
+
+        .message.assistant ul, .message.assistant ol {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        .message.assistant li {
+            margin-bottom: 5px;
+        }
+
+        .message.assistant table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+
+        .message.assistant th, .message.assistant td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .message.assistant th {
+            background: #1a3a6e;
+            color: white;
+        }
+
+        .message.assistant tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .message.assistant code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        .message.assistant blockquote {
+            border-left: 4px solid #1a3a6e;
+            padding: 12px 20px;
+            margin: 15px 0;
+            background-color: #f0f7ff;
+            color: #1a3a6e;
+            font-weight: 500;
+            border-radius: 4px;
+        }
+
+        .message.assistant pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+
+        .message.assistant pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        .message.assistant blockquote {
+            border-left: 4px solid #1a3a6e;
+            padding-left: 15px;
+            margin: 10px 0;
+            color: #666;
+            font-style: italic;
+        }
+
+        .message.assistant hr {
+            border: none;
+            border-top: 2px solid #e0e0e0;
+            margin: 20px 0;
+        }
+
+        .message.assistant strong {
+            font-weight: 600;
+            color: #1a3a6e;
+        }
+
+        /* Warning/Safety Styling */
+        .message.assistant p:has(⚠️), .message.assistant li:has(⚠️) {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 4px solid #ffc107;
+        }
+
+        /* Input Area */
+        .input-area {
+            background: white;
+            padding: 20px 30px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-area input:focus {
+            border-color: #1a3a6e;
+        }
+
+        .input-area button {
+            background: #1a3a6e;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .input-area button:hover {
+            background: #2c5aa0;
+        }
+
+        .input-area button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            gap: 5px;
+            padding: 20px;
+        }
+
+        .loading span {
+            width: 10px;
+            height: 10px;
+            background: #1a3a6e;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        .loading span:nth-child(1) { animation-delay: -0.32s; }
+        .loading span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Welcome Message */
+        .welcome {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .welcome h2 {
+            color: #1a3a6e;
+            margin-bottom: 10px;
+        }
+
+        /* Status indicator */
+        .status {
+            font-size: 0.75rem;
+            color: #666;
+            text-align: center;
+            padding: 5px;
+        }
+
+        .status.connected { color: #28a745; }
+        .status.error { color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="RIMA_Machine.png" alt="RIMA Atlanta">
+        <div class="header-text">
+            <h1>Technical Assistant</h1>
+            <p>We move Post Press</p>
+        </div>
+        <div class="deep-search-toggle">
+            <span>Deep Search</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="deepSearchToggle" onchange="toggleMachineSelector()">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        <select id="machineSelect" disabled style="opacity: 0.5;">
+            <option value="">General Chat</option>
+            <option value="RS-10">RS-10</option>
+            <option value="RS-11">RS-11</option>
+            <option value="RS-12">RS-12</option>
+            <option value="RS-33">RS-33</option>
+            <option value="SH700">SH700</option>
+            <option value="RS-610">RS-610</option>
+            <option value="RS-650">RS-650</option>
+        </select>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+        <div class="welcome">
+            <h2>Welcome to RIMA Technical Support</h2>
+            <p><strong>Regular Chat:</strong> Ask questions about RIMA equipment specifications, dimensions, capabilities, or operation.</p>
+            <p><strong>Deep Search Mode:</strong> Toggle on for specialized electrical, PLC programming, and controls questions (requires machine selection).</p>
+            <p><em>Supported machines: RS-10, RS-11, RS-12, RS-33, SH700, RS-610, RS-650</em></p>
+        </div>
+    </div>
+
+    <div class="status" id="status">Ready</div>
+
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Ask a technical question..." autofocus>
+        <button id="sendBtn" onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        // Configuration - Production URL
+        const WEBHOOK_URL = 'https://schaefer.app.n8n.cloud/webhook/rima-chat';
+        
+        const chatContainer = document.getElementById('chatContainer');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const status = document.getElementById('status');
+
+        // Session ID for conversation tracking
+        const sessionId = 'session_' + Math.random().toString(36).substr(2, 9);
+
+        // Toggle machine selector based on Deep Search
+        function toggleMachineSelector() {
+            const deepSearchToggle = document.getElementById('deepSearchToggle');
+            const machineSelect = document.getElementById('machineSelect');
+            
+            if (deepSearchToggle.checked) {
+                // Deep Search ON - Enable machine selector
+                machineSelect.disabled = false;
+                machineSelect.style.opacity = '1';
+                machineSelect.selectedIndex = 1; // Select first machine
+            } else {
+                // Deep Search OFF - Disable and reset to General
+                machineSelect.disabled = true;
+                machineSelect.style.opacity = '0.5';
+                machineSelect.selectedIndex = 0; // Reset to "General Chat"
+            }
+        }
+
+        // Enter key to send
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !sendBtn.disabled) {
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            // Get selected machine and deep search state
+            const machineSelect = document.getElementById('machineSelect');
+            const deepSearchToggle = document.getElementById('deepSearchToggle');
+            const selectedMachine = machineSelect.value;
+            const isDeepSearch = deepSearchToggle.checked;
+
+            // Validate: If Deep Search is ON, machine must be selected
+            if (isDeepSearch && (!selectedMachine || selectedMachine === '')) {
+                alert('Please select a machine model for Deep Search mode.');
+                machineSelect.focus();
+                return;
+            }
+
+            // Clear welcome message on first send
+            const welcome = document.querySelector('.welcome');
+            if (welcome) welcome.remove();
+
+            // Add user message with context
+            let displayMessage = message;
+            if (isDeepSearch && selectedMachine) {
+                displayMessage = `[${selectedMachine} - Deep Search] ${message}`;
+            }
+            addMessage(displayMessage, 'user');
+            userInput.value = '';
+
+            // Disable input while processing
+            sendBtn.disabled = true;
+            userInput.disabled = true;
+            machineSelect.disabled = true;
+            deepSearchToggle.disabled = true;
+            status.textContent = isDeepSearch ? 'Deep searching...' : 'Processing...';
+            status.className = 'status';
+
+            // Progressive status updates for long-running queries
+            const statusMessages = [
+                { delay: 0, text: isDeepSearch ? 'Searching technical documentation...' : 'Processing your question...' },
+                { delay: 15000, text: 'Analyzing equipment specifications...' },
+                { delay: 45000, text: 'Generating detailed response...' },
+                { delay: 90000, text: 'Finalizing answer (this is taking longer than usual)...' }
+            ];
+
+            let currentStatusIndex = 0;
+            const statusInterval = setInterval(() => {
+                currentStatusIndex++;
+                if (currentStatusIndex < statusMessages.length) {
+                    status.textContent = statusMessages[currentStatusIndex].text;
+                }
+            }, 15000);
+
+            // Show loading
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message assistant loading';
+            loadingDiv.innerHTML = '<span></span><span></span><span></span>';
+            chatContainer.appendChild(loadingDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // Add timeout handling (3 minutes)
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 180000);
+
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        sessionId: sessionId,
+                        action: 'sendMessage',
+                        chatInput: message,
+                        machine: selectedMachine,
+                        deepSearch: isDeepSearch
+                    }),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                // Remove loading
+                loadingDiv.remove();
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // Extract the response text
+                let responseText = '';
+                if (data.response) {
+                    responseText = data.response;
+                } else if (data.content && data.content[0] && data.content[0].text) {
+                    responseText = data.content[0].text;
+                } else if (typeof data === 'string') {
+                    responseText = data;
+                } else {
+                    responseText = JSON.stringify(data, null, 2);
+                }
+
+                addMessage(responseText, 'assistant');
+                status.textContent = 'Ready';
+                status.className = 'status connected';
+                clearInterval(statusInterval);
+
+            } catch (error) {
+                loadingDiv.remove();
+                clearTimeout(timeoutId);
+                clearInterval(statusInterval);
+                console.error('Error:', error);
+                
+                let errorMessage = 'Sorry, there was an error connecting to the assistant.';
+                
+                if (error.name === 'AbortError') {
+                    errorMessage = '⏱️ The request took too long and timed out (>3 minutes). This can happen with complex queries. Please try:\n\n• Breaking your question into smaller parts\n• Being more specific about what you need\n• Contacting support at service@rima-atlanta.com if this persists';
+                } else if (!navigator.onLine) {
+                    errorMessage = '🌐 No internet connection detected. Please check your network and try again.';
+                } else {
+                    errorMessage = '❌ Connection error. Please check that the N8N workflow is running and active.';
+                }
+                
+                addMessage(errorMessage, 'assistant');
+                status.textContent = error.name === 'AbortError' ? 'Request timed out' : 'Connection error';
+                status.className = 'status error';
+            }
+
+            // Re-enable input
+            sendBtn.disabled = false;
+            userInput.disabled = false;
+            machineSelect.disabled = false;
+            deepSearchToggle.disabled = false;
+            userInput.focus();
+        }
+
+        function addMessage(text, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            if (type === 'assistant') {
+                // Check if response contains HTML tags
+                if (text.includes('<div') || text.includes('<table>') || text.includes('<h1>') || text.includes('<h2>')) {
+                    // Render HTML directly - our N8N workflow sends clean, styled HTML
+                    messageDiv.innerHTML = text;
+                } else {
+                    // Fallback to markdown parsing for plain text
+                    messageDiv.innerHTML = marked.parse(text);
+                }
+            } else {
+                // User messages - plain text only
+                messageDiv.textContent = text;
+            }
+            
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    </script>
+</body>
+</html>
